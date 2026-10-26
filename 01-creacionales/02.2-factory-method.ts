@@ -12,6 +12,8 @@
  * https://refactoring.guru/es/design-patterns/factory-method
  */
 
+import { COLORS } from "../helpers/colors.ts";
+
 /**
  * 	!Descripción:
   1.	Completen las clases SalesReport e InventoryReport para implementar 
@@ -24,8 +26,6 @@
       el prompt para seleccionar el tipo de reporte.
  */
 
-import { COLORS } from '../helpers/colors.ts';
-
 // 1. Definir la interfaz Report
 interface Report {
   generate(): void;
@@ -35,19 +35,27 @@ interface Report {
 // Implementar SalesReport e InventoryReport
 
 class SalesReport implements Report {
-  // TODO: implementar el método e imprimir en consola:
-  // 'Generando reporte de ventas...'
+  generate(): void {
+    console.log("Generando reporte de %cventas...", COLORS.cyan);
+  }
 }
 
 class InventoryReport implements Report {
-  // TODO: implementar el método e imprimir en consola:
-  // 'Generando reporte de inventario...'
+  generate(): void {
+    console.log("Generando reporte de %cinventario...", COLORS.green);
+  }
+}
+
+class HumanResourcesReport implements Report {
+  generate(): void {
+    console.log("Generando reporte de %crecursos humanos...", COLORS.pink);
+  }
 }
 
 // 3. Clase Base ReportFactory con el Método Factory
 
 abstract class ReportFactory {
-  abstract createReport(): Report;
+  protected abstract createReport(): Report;
 
   generateReport(): void {
     const report = this.createReport();
@@ -59,13 +67,19 @@ abstract class ReportFactory {
 
 class SalesReportFactory extends ReportFactory {
   createReport(): Report {
-    throw new Error('Method not implemented.');
+    return new SalesReport();
   }
 }
 
 class InventoryReportFactory extends ReportFactory {
   createReport(): Report {
-    throw new Error('Method not implemented.');
+    return new InventoryReport();
+  }
+}
+
+class HumanResourcesReportFactory extends ReportFactory {
+  createReport(): Report {
+    return new HumanResourcesReport();
   }
 }
 
@@ -75,14 +89,15 @@ function main() {
   let reportFactory: ReportFactory;
 
   const reportType = prompt(
-    '¿Qué tipo de reporte deseas? %c(sales/inventory)',
-    COLORS.red
+    "¿Qué tipo de reporte deseas? (sales/inventory/rrhh)",
   );
 
-  if (reportType === 'sales') {
+  if (reportType === "sales") {
     reportFactory = new SalesReportFactory();
-  } else {
+  } else if (reportType == "inventory") {
     reportFactory = new InventoryReportFactory();
+  } else {
+    reportFactory = new HumanResourcesReportFactory();
   }
 
   reportFactory.generateReport();
