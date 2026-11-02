@@ -8,7 +8,7 @@
  * * objeto de configuración.
  */
 
-import { COLORS } from '../helpers/colors.ts';
+import { COLORS } from "../helpers/colors.ts";
 
 class DatabaseConnection {
   private static instance: DatabaseConnection;
@@ -20,17 +20,36 @@ class DatabaseConnection {
   // Método estático para obtener la instancia única
   public static getInstance(): DatabaseConnection {
     // Completar: implementar el patrón Singleton
-    throw new Error('Method not implemented.');
+    if (!DatabaseConnection.instance) {
+      DatabaseConnection.instance = new DatabaseConnection();
+      console.log("\n%cConectado a la base de datos", COLORS.blue);
+    }
+
+    return DatabaseConnection.instance;
   }
 
   // Método para conectar a la base de datos
   public connect(): void {
     // Completar: si no está conectado, mostrar mensaje de conexión
+    if (this.connected) {
+      console.log("%cYa estábamos conectados a la base de datos", COLORS.red);
+      return;
+    }
+
+    this.connected = true;
+    console.log("%cNueva conexión a la base de datos", COLORS.green);
   }
 
   // Método para desconectar de la base de datos
   public disconnect(): void {
     // Completar: desconectar y mostrar mensaje de desconexión
+    if (this.connected) {
+      console.log("%cDesconectamos la base de datos", COLORS.orange);
+      this.connected = false;
+      return;
+    }
+
+    console.log("%cNo hay una conexión activa", COLORS.red);
   }
 }
 
@@ -42,9 +61,10 @@ function main() {
   const db2 = DatabaseConnection.getInstance();
   db2.connect(); // Debería mostrar que ya existe una conexión activa
 
-  console.log('Son iguales:', db1 === db2); // Debería mostrar true
+  console.log("Son iguales:", db1 === db2); // Debería mostrar true
 
   db1.disconnect(); // Debería cerrar la conexión
+  db2.disconnect(); // No hay conexión activa
 
   db2.connect(); // Ahora debería conectar de nuevo, ya que se cerró la anterior
 }
