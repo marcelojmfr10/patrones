@@ -8,7 +8,7 @@
  * * pero se sabe que se necesita procesar en una secuencia.
  */
 
-import { COLORS } from '../helpers/colors.ts';
+import { COLORS } from "../helpers/colors.ts";
 
 // 1. Interfaz Approver
 interface Approver {
@@ -32,55 +32,66 @@ abstract class BaseApprover implements Approver {
     if (this.nextApprover) {
       this.nextApprover.approveRequest(amount);
       return;
-    } 
-    
-    
-    console.log('Solicitud no pudo ser aprobada.');
-    
+    }
+
+    console.log("Solicitud no pudo ser aprobada.");
   }
 }
 
 // 3. Clases Concretas de Aprobadores
 
 class Supervisor extends BaseApprover {
-  // TODO: Implementar el método approveRequest si el monto es menor o igual a 1000
-  // TODO: Si el monto es mayor a 1000, pasar la solicitud al siguiente aprobador
   override approveRequest(amount: number): void {
-    throw new Error('Method not implemented.');
+    if (amount <= 1000) {
+      console.log(
+        `Supervisor aprueba la compra de %c$${amount}`,
+        COLORS.yellow,
+      );
+      return;
+    }
+
+    this.next(amount);
   }
 }
 
 class Manager extends BaseApprover {
-  //TODO: Implementar el método approveRequest si el monto es menor o igual a 5000
-  // TODO: Si el monto es mayor a 5000, pasar la solicitud al siguiente aprobador
-
   override approveRequest(amount: number): void {
-    throw new Error('Method not implemented.');
+    if (amount <= 5000) {
+      console.log(`Manager aprueba la compra de %c$${amount}`, COLORS.yellow);
+      return;
+    }
+
+    this.next(amount);
   }
 }
 
 class Director extends BaseApprover {
-  // TODO: Implementar el método approveRequest si el monto
+  override approveRequest(amount: number): void {
+    console.log(`Diector aprueba la compra de %c$${amount}`, COLORS.yellow);
+  }
 }
 
 // 4. Código Cliente para probar la cadena de responsabilidad
 
 function main() {
+  // <= 1000
   const supervisor = new Supervisor();
+  // <= 5000
   const manager = new Manager();
+  // puede aprobar todo
   const director = new Director();
 
   // Configurar la cadena de responsabilidad
   supervisor.setNext(manager).setNext(director);
 
   // Probar diferentes solicitudes de compra
-  console.log('Solicitud de compra de $500:');
+  console.log("Solicitud de compra de $500:");
   supervisor.approveRequest(500);
 
-  console.log('\nSolicitud de compra de $3000:');
+  console.log("\nSolicitud de compra de $3000:");
   supervisor.approveRequest(3000);
 
-  console.log('\nSolicitud de compra de $7000:');
+  console.log("\nSolicitud de compra de $7000:");
   supervisor.approveRequest(7000);
 }
 
